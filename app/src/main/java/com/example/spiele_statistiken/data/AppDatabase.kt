@@ -6,14 +6,15 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 
 @Database(
-    entities = [Spieler::class, SpielEvent::class, SpielEventTeilnehmer::class],
-    version = 1,
+    entities = [Spieler::class, SpielEvent::class, SpielEventTeilnehmer::class, SpielTyp::class],
+    version = 2,
     exportSchema = true
 )
 abstract class AppDatabase : RoomDatabase() {
 
     abstract fun spielerDao(): SpielerDao
     abstract fun spielEventDao(): SpielEventDao
+    abstract fun spielTypDao(): SpielTypDao
 
     companion object {
         @Volatile
@@ -25,11 +26,12 @@ abstract class AppDatabase : RoomDatabase() {
                     context.applicationContext,
                     AppDatabase::class.java,
                     "spiele_statistiken_db"
-                ).build()
+                )
+                    .fallbackToDestructiveMigration(true)
+                    .build()
                 INSTANCE = instance
                 instance
             }
         }
     }
 }
-

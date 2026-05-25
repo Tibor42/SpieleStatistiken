@@ -7,6 +7,8 @@ class Repository(private val db: AppDatabase) {
     private val spielerDao = db.spielerDao()
     private val eventDao = db.spielEventDao()
 
+    private val spielTypDao = db.spielTypDao()
+
     // Spieler
     fun getAlleSpieler(): Flow<List<Spieler>> = spielerDao.getAlleSpieler()
 
@@ -55,5 +57,24 @@ class Repository(private val db: AppDatabase) {
     suspend fun eventLoeschen(event: SpielEvent) {
         eventDao.delete(event)
     }
+    // Spiel-Typen
+    fun getAlleSpielTypen(): Flow<List<SpielTyp>> = spielTypDao.getAlleSpielTypen()
+
+    suspend fun spielTypHinzufuegen(name: String, gewinnmodus: String): Long {
+        return spielTypDao.insert(SpielTyp(name = name, gewinnmodus = gewinnmodus))
+    }
+
+    suspend fun spielTypLoeschen(spielTyp: SpielTyp) {
+        spielTypDao.delete(spielTyp)
+    }
+
+    suspend fun spielTypAktualisieren(spielTyp: SpielTyp) {
+        spielTypDao.update(spielTyp)
+    }
+
+    suspend fun getSpielTypById(id: Long): SpielTyp? {
+        return spielTypDao.getById(id)
+    }
+
 }
 

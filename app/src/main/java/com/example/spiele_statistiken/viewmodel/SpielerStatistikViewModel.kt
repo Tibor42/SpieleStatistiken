@@ -8,6 +8,7 @@ import com.example.spiele_statistiken.data.Repository
 import com.example.spiele_statistiken.data.Spieler
 import com.example.spiele_statistiken.data.SpielEvent
 import com.example.spiele_statistiken.data.SpielEventTeilnehmer
+import com.example.spiele_statistiken.data.SpielTyp
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -20,6 +21,11 @@ class SpielerStatistikViewModel(application: Application) : AndroidViewModel(app
     val alleSpieler: Flow<List<Spieler>> = repository.getAlleSpieler()
     val alleEvents: Flow<List<SpielEvent>> = repository.getAlleEvents()
     val alleTeilnehmer: Flow<List<SpielEventTeilnehmer>> = repository.getAlleTeilnehmer()
+
+    val alleSpielTypen: Flow<List<SpielTyp>> = repository.getAlleSpielTypen()
+
+    private val _ausgewaehlterSpielTyp = MutableStateFlow<SpielTyp?>(null)
+    val ausgewaehlterSpielTyp: StateFlow<SpielTyp?> = _ausgewaehlterSpielTyp
 
     private val _ausgewaehlteSpieler = MutableStateFlow<Set<Long>>(emptySet())
     val ausgewaehlteSpieler: StateFlow<Set<Long>> = _ausgewaehlteSpieler
@@ -64,4 +70,26 @@ class SpielerStatistikViewModel(application: Application) : AndroidViewModel(app
 
     fun getTeilnehmerFuerEvent(eventId: Long): Flow<List<SpielEventTeilnehmer>> =
         repository.getTeilnehmerFuerEvent(eventId)
+
+    fun spielTypAuswaehlen(spielTyp: SpielTyp) {
+        _ausgewaehlterSpielTyp.value = spielTyp
+    }
+
+    fun spielTypHinzufuegen(name: String, gewinnmodus: String) {
+        viewModelScope.launch {
+            val id = repository.spielTypHinzufuegen(name, gewinnmodus)
+            val neuerTyp = repository.getSpielTypById(id)
+            _ausgewaehlterSpielTyp.value = neuerTyp
+        }
+    }
+
+    fun spielTypLoeschen(spielTyp: SpielTyp) {
+        viewModelScope.launch {
+            repository.spielTypLoeschen(spielTyp)
+            if (_ausgewaehlterSpielTyp.value?.id == spielTyp.id) {
+                _ausgewaehlterSpielTyp.value = null
+            }
+        }
+    }
 }
+

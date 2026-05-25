@@ -12,6 +12,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.List
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -24,6 +25,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.spiele_statistiken.ui.EventsScreen
 import com.example.spiele_statistiken.ui.NeuesEventScreen
+import com.example.spiele_statistiken.ui.SpielTypScreen
 import com.example.spiele_statistiken.ui.StatistikScreen
 import com.example.spiele_statistiken.ui.theme.SpieleStatistikenTheme
 import com.example.spiele_statistiken.viewmodel.SpielerStatistikViewModel
@@ -61,6 +63,9 @@ fun MainScreen() {
             composable("statistik") {
                 StatistikScreen(viewModel = viewModel, innerPadding = innerPadding)
             }
+            composable("spiel_typen") {
+                SpielTypScreen(viewModel = viewModel, innerPadding = innerPadding)
+            }
         }
     }
 }
@@ -88,6 +93,12 @@ fun BottomNavBar(navController: NavHostController) {
             label = { Text("Statistik") },
             selected = aktuelleRoute == "statistik",
             onClick = { navController.navigate("statistik") }
+        )
+        NavigationBarItem(
+            icon = { Icon(Icons.Filled.Settings, contentDescription = "Spiel-Typen") },
+            label = { Text("Spiele") },
+            selected = aktuelleRoute == "spiel_typen",
+            onClick = { navController.navigate("spiel_typen") }
         )
     }
 }

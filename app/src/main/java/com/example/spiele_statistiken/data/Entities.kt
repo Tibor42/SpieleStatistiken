@@ -20,7 +20,8 @@ data class SpielEvent(
     val datum: String,
     val startzeit: String = "",
     val endzeit: String = "",
-    val anzahlSpiele: Int
+    val anzahlSpiele: Int,
+    val spielTypId: Long? = null
 )
 
 @Entity(
@@ -45,4 +46,12 @@ data class SpielEventTeilnehmer(
     val eventId: Long,
     val spielerId: Long,
     val punkte: Int
+)
+
+@Entity(tableName = "spiel_typ")
+data class SpielTyp(
+    @PrimaryKey(autoGenerate = true)
+    val id: Long = 0,
+    val name: String,
+    val gewinnmodus: String = "wenigste" // "wenigste" oder "meiste"
 )

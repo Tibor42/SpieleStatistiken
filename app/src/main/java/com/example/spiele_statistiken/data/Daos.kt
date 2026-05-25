@@ -39,3 +39,21 @@ interface SpielEventDao {
     fun getAlleTeilnehmer(): Flow<List<SpielEventTeilnehmer>>
 
 }
+
+@Dao
+interface SpielTypDao {
+    @Insert
+    suspend fun insert(spielTyp: SpielTyp): Long
+
+    @Update
+    suspend fun update(spielTyp: SpielTyp)
+
+    @Delete
+    suspend fun delete(spielTyp: SpielTyp)
+
+    @Query("SELECT * FROM spiel_typ ORDER BY name ASC")
+    fun getAlleSpielTypen(): Flow<List<SpielTyp>>
+
+    @Query("SELECT * FROM spiel_typ WHERE id = :id")
+    suspend fun getById(id: Long): SpielTyp?
+}
