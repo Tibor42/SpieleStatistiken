@@ -64,12 +64,17 @@ class Repository(private val db: AppDatabase) {
 
     fun getAlleTeilnehmerMitTyp(): Flow<List<TeilnehmerMitTyp>> = eventDao.getAlleTeilnehmerMitTyp()
 
-    suspend fun spielTypHinzufuegen(name: String, gewinnmodus: String): Long {
-        return spielTypDao.insert(SpielTyp(name = name, gewinnmodus = gewinnmodus))
+    suspend fun spielTypHinzufuegen(name: String, gewinnmodus: String, rundenRelevant: Boolean): Long {
+        return spielTypDao.insert(SpielTyp(name = name, gewinnmodus = gewinnmodus, rundenRelevant = rundenRelevant))
     }
 
-    suspend fun spielTypLoeschen(spielTyp: SpielTyp) {
-        spielTypDao.delete(spielTyp)
+    suspend fun spielTypLoeschen(spielTyp: SpielTyp): Boolean {
+        return try {
+            spielTypDao.delete(spielTyp)
+            true
+        } catch (e: android.database.sqlite.SQLiteConstraintException) {
+            false
+        }
     }
 
     suspend fun spielTypAktualisieren(spielTyp: SpielTyp) {

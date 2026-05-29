@@ -1,6 +1,7 @@
 package com.example.spiele_statistiken.ui
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
@@ -24,6 +25,10 @@ fun SpielTypScreen(
 
     var neuerName by remember { mutableStateOf("") }
     var gewinnmodus by remember { mutableStateOf("wenigste") }
+
+    var rundenRelevant by remember { mutableStateOf(true) }
+
+    val spielTypFehler by viewModel.spielTypFehler.collectAsStateWithLifecycle()
 
     LazyColumn(
         modifier = Modifier
@@ -61,13 +66,24 @@ fun SpielTypScreen(
                 )
                 Text("Wer die meisten Punkte hat gewinnt")
             }
+            Row(verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier.fillMaxWidth()) {
+
+                Text("Runden relevant (Bps. Romme/Skat)")
+                Switch(
+                    checked = rundenRelevant,
+                    onCheckedChange = { rundenRelevant = it }
+                )
+
+            }
 
             Spacer(modifier = Modifier.height(8.dp))
 
             Button(
                 onClick = {
                     if (neuerName.isNotBlank()) {
-                        viewModel.spielTypHinzufuegen(neuerName.trim(), gewinnmodus)
+                        viewModel.spielTypHinzufuegen(neuerName.trim(), gewinnmodus, rundenRelevant)
                         neuerName = ""
                         gewinnmodus = "wenigste"
                     }
@@ -75,6 +91,14 @@ fun SpielTypScreen(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text("Spiel-Typ hinzufügen")
+            }
+
+            if (spielTypFehler.isNotEmpty()) {
+                Text(
+                    text = spielTypFehler,
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.bodySmall
+                )
             }
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -111,6 +135,13 @@ fun SpielTypZeile(spielTyp: SpielTyp, viewModel: SpielerStatistikViewModel) {
                 if (spielTyp.gewinnmodus == "wenigste")
                     "Wenigste Punkte gewinnt"
                 else "Meiste Punkte gewinnt",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            Text(
+                if (spielTyp.rundenRelevant) {
+                    "Runden sind relevant"
+                } else "Runden spielen keine Rolle",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )

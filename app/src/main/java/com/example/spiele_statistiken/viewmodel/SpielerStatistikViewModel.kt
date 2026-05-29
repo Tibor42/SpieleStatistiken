@@ -28,8 +28,10 @@ class SpielerStatistikViewModel(application: Application) : AndroidViewModel(app
     val alleSpielTypen: Flow<List<SpielTyp>> = repository.getAlleSpielTypen()
 
     private val _ausgewaehlterSpielTyp = MutableStateFlow<SpielTyp?>(null)
-    val ausgewaehlterSpielTyp: StateFlow<SpielTyp?> = _ausgewaehlterSpielTyp
+    private val _spielTypFehler = MutableStateFlow<String>("")
+    val spielTypFehler: StateFlow<String> = _spielTypFehler
 
+    val ausgewaehlterSpielTyp: StateFlow<SpielTyp?> = _ausgewaehlterSpielTyp
     private val _ausgewaehlteSpieler = MutableStateFlow<Set<Long>>(emptySet())
     val ausgewaehlteSpieler: StateFlow<Set<Long>> = _ausgewaehlteSpieler
 
@@ -88,9 +90,9 @@ class SpielerStatistikViewModel(application: Application) : AndroidViewModel(app
         _ausgewaehlterSpielTyp.value = spielTyp
     }
 
-    fun spielTypHinzufuegen(name: String, gewinnmodus: String) {
+    fun spielTypHinzufuegen(name: String, gewinnmodus: String, rundenRelevant: Boolean) {
         viewModelScope.launch {
-            val id = repository.spielTypHinzufuegen(name, gewinnmodus)
+            val id = repository.spielTypHinzufuegen(name, gewinnmodus, rundenRelevant)
             val neuerTyp = repository.getSpielTypById(id)
             _ausgewaehlterSpielTyp.value = neuerTyp
         }
@@ -98,10 +100,16 @@ class SpielerStatistikViewModel(application: Application) : AndroidViewModel(app
 
     fun spielTypLoeschen(spielTyp: SpielTyp) {
         viewModelScope.launch {
-            repository.spielTypLoeschen(spielTyp)
-            if (_ausgewaehlterSpielTyp.value?.id == spielTyp.id) {
-                _ausgewaehlterSpielTyp.value = null
+            val erfolg = repository.spielTypLoeschen(spielTyp)
+            if (erfolg) {
+                if (_ausgewaehlterSpielTyp.value?.id == spielTyp.id) {
+                    _ausgewaehlterSpielTyp.value = null
+                }
+                _spielTypFehler.value = ""
+            } else {
+                _spielTypFehler.value = "\"${spielTyp.name}\" kann nicht geloescht werden - es gibt noch Events mit diesem Typ!"
             }
+
         }
     }
 }

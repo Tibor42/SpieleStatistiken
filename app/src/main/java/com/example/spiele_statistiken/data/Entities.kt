@@ -14,7 +14,17 @@ data class Spieler(
     val nachname: String = ""
 )
 
-@Entity(tableName = "spiel_event")
+@Entity(
+    tableName = "spiel_event",
+    foreignKeys = [
+        ForeignKey(
+            entity = SpielTyp::class,
+            parentColumns = ["id"],
+            childColumns = ["spiel_typ_id"],
+            onDelete = ForeignKey.RESTRICT
+        )
+    ]
+)
 data class SpielEvent(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0,
@@ -58,7 +68,8 @@ data class SpielTyp(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0,
     val name: String,
-    val gewinnmodus: String = "wenigste" // "wenigste" oder "meiste"
+    val gewinnmodus: String = "wenigste", // "wenigste" oder "meiste"
+    val rundenRelevant: Boolean = true
 )
 
 
