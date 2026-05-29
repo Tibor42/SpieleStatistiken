@@ -94,10 +94,18 @@ fun EventCard(
                     }
                     val runden = if (teilnehmer.isNotEmpty())
                         event.anzahlSpiele / teilnehmer.size else 0
+
+                    val rundenRelevant = alleSpielTypen.find {it.id == event.spielTypId }?.rundenRelevant ?: true
+
+
                     Text(
-                        text = "${event.anzahlSpiele} Spiele / $runden Runden",
+                        text = if (rundenRelevant)
+                            "${event.anzahlSpiele} Spiele / $runden Runden"
+                        else
+                            "${event.anzahlSpiele} Spiele",
                         style = MaterialTheme.typography.bodySmall
                     )
+
                 }
                 IconButton(onClick = { viewModel.eventLoeschen(event) }) {
                     Icon(Icons.Filled.Delete, contentDescription = "Löschen")
