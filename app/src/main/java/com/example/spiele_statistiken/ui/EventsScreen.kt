@@ -14,6 +14,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.spiele_statistiken.data.Spieler
 import com.example.spiele_statistiken.data.SpielEvent
 import com.example.spiele_statistiken.data.SpielEventTeilnehmer
+import com.example.spiele_statistiken.data.SpielTyp
 import com.example.spiele_statistiken.viewmodel.SpielerStatistikViewModel
 
 @Composable
@@ -23,6 +24,7 @@ fun EventsScreen(
 ) {
     val alleEvents by viewModel.alleEvents.collectAsStateWithLifecycle(emptyList())
     val alleSpieler by viewModel.alleSpieler.collectAsStateWithLifecycle(emptyList())
+    val alleSpielTypen by viewModel.alleSpielTypen.collectAsStateWithLifecycle(emptyList())
 
     if (alleEvents.isEmpty()) {
         Box(
@@ -48,6 +50,7 @@ fun EventsScreen(
             EventCard(
                 event = event,
                 alleSpieler = alleSpieler,
+                alleSpielTypen = alleSpielTypen,
                 viewModel = viewModel
             )
         }
@@ -58,6 +61,7 @@ fun EventsScreen(
 fun EventCard(
     event: SpielEvent,
     alleSpieler: List<Spieler>,
+    alleSpielTypen: List<SpielTyp>,
     viewModel: SpielerStatistikViewModel
 ) {
     val teilnehmer by viewModel.getTeilnehmerFuerEvent(event.id)
@@ -73,8 +77,11 @@ fun EventCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Column {
+
+                    val spielTypName = alleSpielTypen.find { it.id == event.spielTypId }?.name ?: ""
+
                     Text(
-                        text = event.datum,
+                        text = event.datum + (spielTypName.takeIf { it.isNotEmpty() }?.let { " - $it" } ?: ""),
                         style = MaterialTheme.typography.titleMedium
                     )
                     if (event.startzeit.isNotEmpty()) {

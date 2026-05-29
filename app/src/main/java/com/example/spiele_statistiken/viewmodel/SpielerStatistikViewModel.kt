@@ -9,6 +9,7 @@ import com.example.spiele_statistiken.data.Spieler
 import com.example.spiele_statistiken.data.SpielEvent
 import com.example.spiele_statistiken.data.SpielEventTeilnehmer
 import com.example.spiele_statistiken.data.SpielTyp
+import com.example.spiele_statistiken.data.TeilnehmerMitTyp
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -21,6 +22,8 @@ class SpielerStatistikViewModel(application: Application) : AndroidViewModel(app
     val alleSpieler: Flow<List<Spieler>> = repository.getAlleSpieler()
     val alleEvents: Flow<List<SpielEvent>> = repository.getAlleEvents()
     val alleTeilnehmer: Flow<List<SpielEventTeilnehmer>> = repository.getAlleTeilnehmer()
+
+    val alleTeilnehmerMitTyp: Flow<List<TeilnehmerMitTyp>> = repository.getAlleTeilnehmerMitTyp()
 
     val alleSpielTypen: Flow<List<SpielTyp>> = repository.getAlleSpielTypen()
 
@@ -35,6 +38,15 @@ class SpielerStatistikViewModel(application: Application) : AndroidViewModel(app
         if (aktuell.contains(spielerId)) aktuell.remove(spielerId)
         else if (aktuell.size < 5) aktuell.add(spielerId)
         _ausgewaehlteSpieler.value = aktuell
+    }
+
+    init {
+        viewModelScope.launch {
+            val letzterTypId = repository.getLetztenSpielTypId()
+            if (letzterTypId != null) {
+                _ausgewaehlterSpielTyp.value = repository.getSpielTypById(letzterTypId)
+            }
+        }
     }
 
     fun spielerHinzufuegen(vorname: String, nachname: String = "") {
@@ -54,10 +66,11 @@ class SpielerStatistikViewModel(application: Application) : AndroidViewModel(app
         anzahlSpiele: Int,
         startzeit: String = "",
         endzeit: String = "",
-        teilnehmer: Map<Long, Int>
+        teilnehmer: Map<Long, Int>,
+        spielTypId: Long
     ) {
         viewModelScope.launch {
-            repository.eventHinzufuegen(datum, anzahlSpiele, startzeit, endzeit, teilnehmer)
+            repository.eventHinzufuegen(datum, anzahlSpiele, startzeit, endzeit, teilnehmer, spielTypId)
             _ausgewaehlteSpieler.value = emptySet()
         }
     }

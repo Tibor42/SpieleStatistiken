@@ -1,6 +1,7 @@
 package com.example.spiele_statistiken.data
 
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
@@ -21,29 +22,33 @@ data class SpielEvent(
     val startzeit: String = "",
     val endzeit: String = "",
     val anzahlSpiele: Int,
+    @ColumnInfo(name = "spiel_typ_id")
     val spielTypId: Long? = null
+
 )
 
 @Entity(
     tableName = "spiel_event_teilnehmer",
-    primaryKeys = ["eventId", "spielerId"],
+    primaryKeys = ["event_id", "spieler_id"],
     foreignKeys = [
         ForeignKey(
             entity = SpielEvent::class,
             parentColumns = ["id"],
-            childColumns = ["eventId"],
+            childColumns = ["event_id"],
             onDelete = ForeignKey.CASCADE
         ),
         ForeignKey(
             entity = Spieler::class,
             parentColumns = ["id"],
-            childColumns = ["spielerId"],
+            childColumns = ["spieler_id"],
             onDelete = ForeignKey.CASCADE
         )
     ]
 )
 data class SpielEventTeilnehmer(
+    @ColumnInfo(name = "event_id")
     val eventId: Long,
+    @ColumnInfo(name = "spieler_id")
     val spielerId: Long,
     val punkte: Int
 )
@@ -54,4 +59,16 @@ data class SpielTyp(
     val id: Long = 0,
     val name: String,
     val gewinnmodus: String = "wenigste" // "wenigste" oder "meiste"
+)
+
+
+data class TeilnehmerMitTyp(
+    @ColumnInfo(name = "event_id")
+    val eventId: Long,
+    @ColumnInfo(name = "spieler_id")
+    val spielerId: Long,
+
+    val punkte: Int,
+    @ColumnInfo(name = "spiel_typ_id")
+    val spielTypId: Long?
 )

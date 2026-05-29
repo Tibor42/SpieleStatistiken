@@ -29,14 +29,24 @@ interface SpielEventDao {
     @Insert
     suspend fun insertTeilnehmer(teilnehmer: SpielEventTeilnehmer)
 
-    @Query("DELETE FROM spiel_event_teilnehmer WHERE eventId = :eventId")
+    @Query("DELETE FROM spiel_event_teilnehmer WHERE event_id = :eventId")
     suspend fun deleteTeilnehmerFuerEvent(eventId: Long)
 
-    @Query("SELECT * FROM spiel_event_teilnehmer WHERE eventId = :eventId")
+    @Query("SELECT * FROM spiel_event_teilnehmer WHERE event_id = :eventId")
     fun getTeilnehmerFuerEvent(eventId: Long): Flow<List<SpielEventTeilnehmer>>
 
     @Query("SELECT * FROM spiel_event_teilnehmer")
     fun getAlleTeilnehmer(): Flow<List<SpielEventTeilnehmer>>
+
+    @Query("SELECT spiel_typ_id FROM spiel_event ORDER BY id DESC LIMIT 1")
+    suspend fun getLetztenSpielTypId():Long?
+
+    @Query( """   
+        SELECT t.*, se.spiel_typ_id
+        FROM spiel_event_teilnehmer t
+        INNER JOIN spiel_event se on t.event_id = se.id
+    """)
+    fun getAlleTeilnehmerMitTyp(): Flow<List<TeilnehmerMitTyp>>
 
 }
 

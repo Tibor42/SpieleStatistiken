@@ -7,7 +7,7 @@ import androidx.room.RoomDatabase
 
 @Database(
     entities = [Spieler::class, SpielEvent::class, SpielEventTeilnehmer::class, SpielTyp::class],
-    version = 2,
+    version = 4,
     exportSchema = true
 )
 abstract class AppDatabase : RoomDatabase() {

@@ -33,14 +33,16 @@ class Repository(private val db: AppDatabase) {
         anzahlSpiele: Int,
         startzeit: String = "",
         endzeit: String = "",
-        teilnehmer: Map<Long, Int>  // spielerId → Punkte
+        teilnehmer: Map<Long, Int>,  // spielerId → Punkte
+        spielTypId: Long
     ) {
         val eventId = eventDao.insert(
             SpielEvent(
                 datum = datum,
                 anzahlSpiele = anzahlSpiele,
                 startzeit = startzeit,
-                endzeit = endzeit
+                endzeit = endzeit,
+                spielTypId = spielTypId
             )
         )
         teilnehmer.forEach { (spielerId, punkte) ->
@@ -60,6 +62,8 @@ class Repository(private val db: AppDatabase) {
     // Spiel-Typen
     fun getAlleSpielTypen(): Flow<List<SpielTyp>> = spielTypDao.getAlleSpielTypen()
 
+    fun getAlleTeilnehmerMitTyp(): Flow<List<TeilnehmerMitTyp>> = eventDao.getAlleTeilnehmerMitTyp()
+
     suspend fun spielTypHinzufuegen(name: String, gewinnmodus: String): Long {
         return spielTypDao.insert(SpielTyp(name = name, gewinnmodus = gewinnmodus))
     }
@@ -75,6 +79,8 @@ class Repository(private val db: AppDatabase) {
     suspend fun getSpielTypById(id: Long): SpielTyp? {
         return spielTypDao.getById(id)
     }
-
+    suspend fun getLetztenSpielTypId(): Long? {
+        return eventDao.getLetztenSpielTypId()
+    }
 }
 

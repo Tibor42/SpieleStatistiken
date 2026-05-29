@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.spiele_statistiken.data.SpielTyp
 import com.example.spiele_statistiken.viewmodel.SpielerStatistikViewModel
 import java.time.LocalDate
 import java.time.LocalTime
@@ -34,6 +35,9 @@ fun NeuesEventScreen(
     var fehler by remember { mutableStateOf("") }
     var erfolg by remember { mutableStateOf(false) }
 
+    val alleSpielTypen by viewModel.alleSpielTypen.collectAsStateWithLifecycle(initialValue = emptyList<SpielTyp>())
+    val ausgewaehlterSpielTyp by viewModel.ausgewaehlterSpielTyp.collectAsStateWithLifecycle()
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -43,6 +47,22 @@ fun NeuesEventScreen(
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         Text("Neues Spiel-Event", style = MaterialTheme.typography.headlineSmall)
+
+        if (alleSpielTypen.isEmpty()) {
+            Text( "Bitte zuerst einen Spiel-Typ anlegen.", color = MaterialTheme.colorScheme.error)
+        } else {
+            Text("Spiel-Typ:", style = MaterialTheme.typography.titleMedium)
+            FlowRow(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                alleSpielTypen.forEach { spielTyp ->  FilterChip(
+                    selected = ausgewaehlterSpielTyp?.id == spielTyp.id,
+                    onClick = { viewModel.spielTypAuswaehlen(spielTyp) },
+                    label = { Text(spielTyp.name)}
+                ) }
+            }
+        }
 
         OutlinedTextField(
             value = datum,
@@ -137,7 +157,11 @@ fun NeuesEventScreen(
                     punkte[id]?.trim()?.toIntOrNull() ?: -1
                 }
                 if (teilnehmerMap.values.any { it < 0 }) { fehler = "Bitte alle Punkte eintragen"; return@Button }
-                viewModel.eventHinzufuegen(datum, spiele, startzeit, endzeit, teilnehmerMap)
+                if (ausgewaehlterSpielTyp == null) {
+                    fehler = "Bitte einen Spiel-Typ auswaehlen"
+                    return@Button
+                }
+                viewModel.eventHinzufuegen(datum, spiele, startzeit, endzeit, teilnehmerMap, ausgewaehlterSpielTyp!!.id)
                 anzahlSpiele = ""
                 startzeit = ""
                 endzeit = ""

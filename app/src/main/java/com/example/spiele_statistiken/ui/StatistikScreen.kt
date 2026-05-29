@@ -15,6 +15,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.spiele_statistiken.data.SpielEvent
 import com.example.spiele_statistiken.data.Spieler
 import com.example.spiele_statistiken.data.SpielEventTeilnehmer
+import com.example.spiele_statistiken.data.SpielTyp
+import com.example.spiele_statistiken.data.TeilnehmerMitTyp
 import com.example.spiele_statistiken.viewmodel.SpielerStatistikViewModel
 
 data class SpielerStatistik(
@@ -33,10 +35,12 @@ fun StatistikScreen(
 ) {
     val alleSpieler by viewModel.alleSpieler.collectAsStateWithLifecycle(emptyList())
     val alleEvents by viewModel.alleEvents.collectAsStateWithLifecycle(emptyList())
-    val alleTeilnehmer by viewModel.alleTeilnehmer.collectAsStateWithLifecycle(emptyList())
 
-    val statistiken = remember(alleSpieler, alleEvents, alleTeilnehmer) {
-        berechneStatistiken(alleSpieler, alleTeilnehmer)
+    val alleTeilnehmerMitTyp by viewModel.alleTeilnehmerMitTyp.collectAsStateWithLifecycle(initialValue = emptyList<TeilnehmerMitTyp>())
+    val alleSpielTypen by viewModel.alleSpielTypen.collectAsStateWithLifecycle(initialValue = emptyList<SpielTyp>())
+
+    val statistiken = remember(alleSpieler, alleEvents, alleTeilnehmerMitTyp, alleSpielTypen) {
+        berechneStatistiken(alleSpieler, alleTeilnehmerMitTyp, alleSpielTypen)
     }
 
     if (alleSpieler.isEmpty()) {
@@ -64,33 +68,61 @@ fun StatistikScreen(
             Spacer(modifier = Modifier.height(8.dp))
             StatistikHeader()
         }
-        items(statistiken) { statistik ->
-            StatistikZeile(statistik = statistik, alleEvents = alleEvents)
+
+        statistiken.forEach { (spielTyp, spielerListe) ->
+            item {
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    spielTyp.name,
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.primary
+                )
+                Text(
+                    if (spielTyp.gewinnmodus == "wenigste") "Wenigste Punkte gewinnt"
+                    else "Meiste Punkte gewinnt",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                StatistikHeader()
+            }
+            items(spielerListe) { statistik ->
+                StatistikZeile(statistik = statistik, alleEvents = alleEvents)
+            }
         }
     }
 }
 
 fun berechneStatistiken(
     alleSpieler: List<Spieler>,
-    alleTeilnehmer: List<SpielEventTeilnehmer>
-): List<SpielerStatistik> {
-    return alleSpieler.map { spieler ->
-        val meineTeilnahmen = alleTeilnehmer.filter { it.spielerId == spieler.id }
-        val anzahlEvents = meineTeilnahmen.size
-        val gesamtPunkte = meineTeilnahmen.sumOf { it.punkte }
+    alleTeilnehmer: List<TeilnehmerMitTyp>,
+    alleSpielTypen: List<SpielTyp>
+): Map<SpielTyp, List<SpielerStatistik>> {
+    return alleSpielTypen.associateWith { spielTyp ->
+        val teilnehmerDesTyps = alleTeilnehmer.filter { it.spielTypId == spielTyp.id }
 
-        val durchschnitt = if (anzahlEvents > 0)
-            gesamtPunkte.toDouble() / anzahlEvents else 0.0
+        alleSpieler.map { spieler ->
+            val meineTeilnahmen = teilnehmerDesTyps.filter { it.spielerId == spieler.id }
+            val anzahlEvents = meineTeilnahmen.size
+            val gesamtPunkte = meineTeilnahmen.sumOf { it.punkte }
+            val durchschnitt = if (anzahlEvents > 0)
+                gesamtPunkte.toDouble() / anzahlEvents else 0.0
 
-        // Siege: Events wo dieser Spieler die wenigsten Punkte hatte
-        val siege = meineTeilnahmen.count { teilnahme ->
-            val eventTeilnehmer = alleTeilnehmer.filter { it.eventId == teilnahme.eventId }
-            eventTeilnehmer.minByOrNull { it.punkte }?.spielerId == spieler.id
-        }
+            val siege = meineTeilnahmen.count { teilnahme ->
+                val eventTeilnehmer = teilnehmerDesTyps.filter { it.eventId == teilnahme.eventId }
+                if (spielTyp.gewinnmodus == "wenigste") {
+                    eventTeilnehmer.minByOrNull { it.punkte }?.spielerId == spieler.id
+                } else {
+                    eventTeilnehmer.maxByOrNull { it.punkte }?.spielerId == spieler.id
+                }
+            }
 
-        SpielerStatistik(spieler, anzahlEvents, siege, gesamtPunkte, durchschnitt, meineTeilnahmen)
-    }.filter { it.anzahlEvents > 0 }
-        .sortedBy { it.gesamtPunkte }
+            SpielerStatistik(spieler, anzahlEvents, siege, gesamtPunkte, durchschnitt, meineTeilnahmen.map {
+                SpielEventTeilnehmer(it.eventId, it.spielerId, it.punkte)
+            })
+        }.filter { it.anzahlEvents > 0 }
+            .sortedBy { if (spielTyp.gewinnmodus == "wenigste") it.gesamtPunkte else -it.gesamtPunkte }
+    }.filter { it.value.isNotEmpty() }
 }
 
 @Composable
