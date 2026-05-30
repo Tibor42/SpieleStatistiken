@@ -1,0 +1,19 @@
+<?php
+$spielTypId = $body['id'] ?? null;
+$name = trim($body['name'] ?? '');
+$gewinnmodus = $body['gewinnmodus'] ?? 'wenigste';
+$rundenRelevant = $body['runden_relevant'] ?? 1;
+
+if (!$spielTypId || empty($name)) {
+    json_response(400, ['fehler' => 'id und name sind erforderlich']);
+}
+
+if (!in_array($gewinnmodus, ['wenigste', 'meiste'])) {
+    json_response(400, ['fehler' => 'gewinnmodus muss "wenigste" oder "meiste" sein']);
+}
+
+$stmt = $db->prepare("UPDATE spstat_spiel_typ SET name = ?, gewinnmodus = ?, runden_relevant = ? WHERE id = ?");
+$stmt->execute([$name, $gewinnmodus, $rundenRelevant, $spielTypId]);
+
+json_response(200, ['nachricht' => 'Spiel-Typ aktualisiert']);
+?>

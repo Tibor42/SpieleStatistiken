@@ -32,8 +32,8 @@ $commands = [
     'spieltyp_aktualisieren',
     'spieltyp_loeschen',
     'events_abrufen',
-    'event_erstellen',
-    'event_loeschen',
+    'events_erstellen',
+    'events_loeschen',
 ];
 
 if (!in_array($cmd, $commands)) {
