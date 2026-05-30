@@ -1,10 +1,12 @@
 package com.example.spiele_statistiken.ui
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -22,7 +24,8 @@ import java.time.format.DateTimeFormatter
 @Composable
 fun NeuesEventScreen(
     viewModel: SpielerStatistikViewModel,
-    innerPadding: PaddingValues
+    innerPadding: PaddingValues,
+    onSpielerClick: (Long) -> Unit
 ) {
     val alleSpieler by viewModel.alleSpieler.collectAsStateWithLifecycle(emptyList())
     val ausgewaehlt by viewModel.ausgewaehlteSpieler.collectAsStateWithLifecycle()
@@ -213,13 +216,16 @@ fun NeuesEventScreen(
 
         alleSpieler.forEach { spieler ->
             Row(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { onSpielerClick(spieler.id) },
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text("${spieler.vorname} ${spieler.nachname}".trim())
                 IconButton(onClick = { viewModel.spielerLoeschen(spieler) }) {
-                    Icon(Icons.Filled.Delete, contentDescription = "Löschen")
+                    Icon(Icons.Filled.ArrowForward, contentDescription = "Details",
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
             }
         }

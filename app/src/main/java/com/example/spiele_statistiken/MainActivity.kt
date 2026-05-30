@@ -26,6 +26,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.spiele_statistiken.ui.EventsScreen
 import com.example.spiele_statistiken.ui.NeuesEventScreen
 import com.example.spiele_statistiken.ui.SpielTypScreen
+import com.example.spiele_statistiken.ui.SpielerDetailScreen
 import com.example.spiele_statistiken.ui.StatistikScreen
 import com.example.spiele_statistiken.ui.theme.SpieleStatistikenTheme
 import com.example.spiele_statistiken.viewmodel.SpielerStatistikViewModel
@@ -55,7 +56,7 @@ fun MainScreen() {
             startDestination = "neues_event"
         ) {
             composable("neues_event") {
-                NeuesEventScreen(viewModel = viewModel, innerPadding = innerPadding)
+                NeuesEventScreen(viewModel = viewModel, innerPadding = innerPadding, onSpielerClick = { spielerId -> navController.navigate("spieler_detail/$spielerId")})
             }
             composable("events") {
                 EventsScreen(viewModel = viewModel, innerPadding = innerPadding)
@@ -65,6 +66,15 @@ fun MainScreen() {
             }
             composable("spiel_typen") {
                 SpielTypScreen(viewModel = viewModel, innerPadding = innerPadding)
+            }
+            composable("spieler_detail/{spielerId}") { backStackEntry ->
+                val spielerId = backStackEntry.arguments?.getString("spielerId")?.toLong() ?:0L
+                SpielerDetailScreen(
+                    spielerId = spielerId,
+                    viewModel = viewModel,
+                    innerPadding = innerPadding,
+                    onBack = { navController.popBackStack() }
+                )
             }
         }
     }

@@ -57,6 +57,12 @@ class SpielerStatistikViewModel(application: Application) : AndroidViewModel(app
         }
     }
 
+    fun spielerAktualisieren(spieler: Spieler) {
+        viewModelScope.launch {
+            repository.spielerAktualisieren(spieler)
+        }
+    }
+
     fun spielerLoeschen(spieler: Spieler) {
         viewModelScope.launch {
             repository.spielerLoeschen(spieler)

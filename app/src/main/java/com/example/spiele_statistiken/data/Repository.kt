@@ -64,6 +64,10 @@ class Repository(private val db: AppDatabase) {
 
     fun getAlleTeilnehmerMitTyp(): Flow<List<TeilnehmerMitTyp>> = eventDao.getAlleTeilnehmerMitTyp()
 
+    suspend fun spielerAktualisieren(spieler: Spieler) {
+        spielerDao.update(spieler)
+    }
+
     suspend fun spielTypHinzufuegen(name: String, gewinnmodus: String, rundenRelevant: Boolean): Long {
         return spielTypDao.insert(SpielTyp(name = name, gewinnmodus = gewinnmodus, rundenRelevant = rundenRelevant))
     }

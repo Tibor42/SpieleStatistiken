@@ -13,6 +13,9 @@ interface SpielerDao {
 
     @Delete
     suspend fun delete(spieler: Spieler)
+
+    @Update
+    suspend fun update(spieler: Spieler)
 }
 
 @Dao
