@@ -46,7 +46,9 @@ fun NeuesEventScreen(
             .fillMaxSize()
             .padding(innerPadding)
             .padding(16.dp)
-            .verticalScroll(rememberScrollState()),
+            .verticalScroll(rememberScrollState())
+            .windowInsetsPadding(WindowInsets.ime)
+        ,
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         Text("Neues Spiel-Event", style = MaterialTheme.typography.headlineSmall)

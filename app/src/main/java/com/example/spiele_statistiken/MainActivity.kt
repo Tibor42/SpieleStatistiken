@@ -30,6 +30,9 @@ import com.example.spiele_statistiken.ui.SpielerDetailScreen
 import com.example.spiele_statistiken.ui.StatistikScreen
 import com.example.spiele_statistiken.ui.theme.SpieleStatistikenTheme
 import com.example.spiele_statistiken.viewmodel.SpielerStatistikViewModel
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.material.icons.filled.Casino
+import com.example.spiele_statistiken.ui.EinstellungenScreen
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -76,6 +79,9 @@ fun MainScreen() {
                     onBack = { navController.popBackStack() }
                 )
             }
+            composable("einstellungen") {
+                EinstellungenScreen(viewModel = viewModel, innerPadding = innerPadding)
+            }
         }
     }
 }
@@ -105,10 +111,16 @@ fun BottomNavBar(navController: NavHostController) {
             onClick = { navController.navigate("statistik") }
         )
         NavigationBarItem(
-            icon = { Icon(Icons.Filled.Settings, contentDescription = "Spiel-Typen") },
+            icon = { Icon(Icons.Filled.Casino, contentDescription = "Spiel-Typen") },
             label = { Text("Spiele") },
             selected = aktuelleRoute == "spiel_typen",
             onClick = { navController.navigate("spiel_typen") }
+        )
+        NavigationBarItem(
+            icon = { Icon(Icons.Filled.Settings, contentDescription = "Einstellungen") },
+            label = { Text("Einst.")},
+            selected = aktuelleRoute == "einstellungen",
+            onClick = { navController.navigate("einstellungen")}
         )
     }
 }

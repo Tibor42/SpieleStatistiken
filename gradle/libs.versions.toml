@@ -11,6 +11,8 @@ composeBom = "2026.02.01"
 room = "2.7.1"
 ksp = "2.2.10-2.0.2"
 navigationCompose = "2.8.9"
+retrofit = "2.11.0"
+okhttp = "4.12.0"
 
 
 [libraries]
@@ -33,6 +35,10 @@ room-compiler = { group = "androidx.room", name = "room-compiler", version.ref =
 room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
 navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }
 compose-material-icons = { group = "androidx.compose.material", name = "material-icons-extended" }
+retrofit-core = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit" }
+retrofit-gson = { group = "com.squareup.retrofit2", name = "converter-gson", version.ref = "retrofit" }
+okhttp-logging = { group = "com.squareup.okhttp3", name = "logging-interceptor", version.ref = "okhttp" }
+
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

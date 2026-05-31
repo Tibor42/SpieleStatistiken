@@ -62,6 +62,9 @@ dependencies {
     implementation(libs.navigation.compose)
     implementation(libs.compose.material.icons)
     ksp(libs.room.compiler)
+    implementation(libs.retrofit.core)
+    implementation(libs.retrofit.gson)
+    implementation(libs.okhttp.logging)
 }
 
 room {

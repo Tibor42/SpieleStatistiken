@@ -10,10 +10,14 @@ import com.example.spiele_statistiken.data.SpielEvent
 import com.example.spiele_statistiken.data.SpielEventTeilnehmer
 import com.example.spiele_statistiken.data.SpielTyp
 import com.example.spiele_statistiken.data.TeilnehmerMitTyp
+import com.example.spiele_statistiken.network.RemoteRepository
+import com.example.spiele_statistiken.network.TeilnehmerRequest
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+
+
 
 class SpielerStatistikViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -35,6 +39,11 @@ class SpielerStatistikViewModel(application: Application) : AndroidViewModel(app
     private val _ausgewaehlteSpieler = MutableStateFlow<Set<Long>>(emptySet())
     val ausgewaehlteSpieler: StateFlow<Set<Long>> = _ausgewaehlteSpieler
 
+    private val remoteRepository = RemoteRepository()
+
+    private val _syncModus = MutableStateFlow("lokal")
+    val syncModus: StateFlow<String> = _syncModus
+
     fun spielerToggle(spielerId: Long) {
         val aktuell = _ausgewaehlteSpieler.value.toMutableSet()
         if (aktuell.contains(spielerId)) aktuell.remove(spielerId)
@@ -50,6 +59,11 @@ class SpielerStatistikViewModel(application: Application) : AndroidViewModel(app
             }
         }
     }
+
+    fun setSyncModus(modus: String) {
+        _syncModus.value = modus
+    }
+
 
     fun spielerHinzufuegen(vorname: String, nachname: String = "") {
         viewModelScope.launch {
@@ -118,5 +132,30 @@ class SpielerStatistikViewModel(application: Application) : AndroidViewModel(app
 
         }
     }
+
+    fun gruppeErstellen(name: String, kennwort: String, callback: (Boolean, String, Long?) -> Unit) {
+        viewModelScope.launch {
+            try {
+                val response = remoteRepository.gruppeErstellen(name, kennwort)
+                _syncModus.value = "online"
+                callback(true, "Gruppe '${response.name}' erfolgreich erstellt!", response.id)
+            } catch (e: Exception) {
+                callback(false, "Fehler: ${e.message}", null)
+            }
+        }
+    }
+    fun gruppeBeitreten(name: String, kennwort: String, callback: (Boolean, String, Long?) -> Unit) {
+        viewModelScope.launch {
+            try {
+                val response = remoteRepository.gruppeBeitreten(name, kennwort)
+                _syncModus.value = "online"
+                callback(true, "Erfolgreich der Gruppe '${response.name}' beigetreten!", response.id)
+            } catch (e: Exception) {
+                callback(false, "Fehler: ${e.message}", null)
+            }
+        }
+    }
+
+
 }
 
