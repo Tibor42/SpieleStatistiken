@@ -1,6 +1,8 @@
 <?php
 $gruppenId = $body['gruppen_id'] ?? null;
 
+pruefeFreischaltung($db, $gruppenId);
+
 if (!$gruppenId) {
     json_response(400, ['fehler' => 'gruppen_id fehlt']);
 }

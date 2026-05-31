@@ -30,7 +30,9 @@ data class TeilnehmerRequest(
 data class GruppeResponse(
     val id: Long,
     val name: String,
-    val nachricht: String? = null
+    val freigeschaltet: Boolean = false,
+    val nachricht: String? = null,
+    val hinweis: String? = null
 )
 
 data class SpielerResponse(

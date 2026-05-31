@@ -36,9 +36,9 @@ class RemoteRepository {
         )
     }
 
-    suspend fun spielerLoeschen(id: Long): NachrichtResponse {
+    suspend fun spielerLoeschen(id: Long, gruppenId: Long): NachrichtResponse {
         return api.request(
-            ApiRequest(cmd = "spieler_loeschen", id = id)
+            ApiRequest(cmd = "spieler_loeschen", id = id, gruppenId = gruppenId)
         )
     }
 
@@ -55,15 +55,15 @@ class RemoteRepository {
         )
     }
 
-    suspend fun spielTypAktualisieren(id: Long, name: String, gewinnmodus: String, rundenRelevant: Int): NachrichtResponse {
+    suspend fun spielTypAktualisieren(id: Long, gruppenId: Long, name: String, gewinnmodus: String, rundenRelevant: Int): NachrichtResponse {
         return api.request(
-            ApiRequest(cmd = "spieltyp_aktualisieren", id = id, name = name, gewinnmodus = gewinnmodus, rundenRelevant = rundenRelevant)
+            ApiRequest(cmd = "spieltyp_aktualisieren", id = id, gruppenId = gruppenId, name = name, gewinnmodus = gewinnmodus, rundenRelevant = rundenRelevant)
         )
     }
 
-    suspend fun spielTypLoeschen(id: Long): NachrichtResponse {
+    suspend fun spielTypLoeschen(id: Long, gruppenId: Long): NachrichtResponse {
         return api.request(
-            ApiRequest(cmd = "spieltyp_loeschen", id = id)
+            ApiRequest(cmd = "spieltyp_loeschen", id = id, gruppenId = gruppenId)
         )
     }
 
@@ -97,9 +97,9 @@ class RemoteRepository {
         )
     }
 
-    suspend fun eventLoeschen(id: Long): NachrichtResponse {
+    suspend fun eventLoeschen(id: Long, gruppenId: Long): NachrichtResponse {
         return api.request(
-            ApiRequest(cmd = "events_loeschen", id = id)
+            ApiRequest(cmd = "events_loeschen", id = id, gruppenId = gruppenId)
         )
     }
 }

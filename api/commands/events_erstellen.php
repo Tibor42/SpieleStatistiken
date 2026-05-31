@@ -11,6 +11,8 @@ if (!$gruppenId || empty($datum) || !$anzahlSpiele) {
     json_response(400, ['fehler' => 'gruppen_id, datum und anzahl_spiele sind erforderlich']);
 }
 
+pruefeFreischaltung($db, $gruppenId);
+
 if (count($teilnehmer) < 2) {
     json_response(400, ['fehler' => 'Mindestens 2 Teilnehmer erforderlich']);
 }

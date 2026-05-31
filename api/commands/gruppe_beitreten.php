@@ -17,6 +17,7 @@ if (!$gruppe || !password_verify($kennwort, $gruppe['kennwort_hash'])) {
 json_response(200, [
     'id' => $gruppe['id'],
     'name' => $gruppe['name'],
+    'freigeschaltet' => (bool)$gruppe['freigeschaltet']
     'nachricht' => 'Erfolgreich beigetreten'
 ]);
 ?>

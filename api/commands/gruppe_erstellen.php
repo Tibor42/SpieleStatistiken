@@ -15,6 +15,7 @@ $id = $db->lastInsertId();
 json_response(201, [
     'id' => $id,
     'name' => $name,
+    'freigeschaltet' => false,
     'nachricht' => 'Gruppe erfolgreich erstellt'
 ]);
 ?>

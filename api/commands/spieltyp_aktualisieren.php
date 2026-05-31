@@ -3,6 +3,9 @@ $spielTypId = $body['id'] ?? null;
 $name = trim($body['name'] ?? '');
 $gewinnmodus = $body['gewinnmodus'] ?? 'wenigste';
 $rundenRelevant = $body['runden_relevant'] ?? 1;
+$gruppenId = $body['gruppen_id'] ?? null;
+
+pruefeFreischaltung($db, $gruppenId);
 
 if (!$spielTypId || empty($name)) {
     json_response(400, ['fehler' => 'id und name sind erforderlich']);

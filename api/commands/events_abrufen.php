@@ -5,6 +5,8 @@ if (!$gruppenId) {
     json_response(400, ['fehler' => 'gruppen_id fehlt']);
 }
 
+pruefeFreischaltung($db, $gruppenId);
+
 $stmt = $db->prepare("
     SELECT e.*,
            t.spieler_id,

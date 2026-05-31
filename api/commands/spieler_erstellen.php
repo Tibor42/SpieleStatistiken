@@ -7,6 +7,8 @@ if (!$gruppenId || empty($vorname)) {
     json_response(400, ['fehler' => 'gruppen_id und vorname sind erforderlich']);
 }
 
+pruefeFreischaltung($db, $gruppenId);
+
 $stmt = $db->prepare("INSERT INTO spstat_spieler (gruppen_id, vorname, nachname) VALUES (?, ?, ?)");
 $stmt->execute([$gruppenId, $vorname, $nachname]);
 $id = $db->lastInsertId();
