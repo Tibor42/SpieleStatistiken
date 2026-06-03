@@ -35,6 +35,13 @@ data class GruppeResponse(
     val hinweis: String? = null
 )
 
+data class GruppenErgebnis(
+    val erfolg: Boolean,
+    val nachricht: String,
+    val gruppenId: Long? = null,
+    val freigeschaltet: Boolean = false
+)
+
 data class SpielerResponse(
     val id: Long,
     @SerializedName("gruppen_id") val gruppenId: Long,
@@ -71,6 +78,8 @@ data class TeilnehmerResponse(
 data class NachrichtResponse(
     val nachricht: String? = null,
     val fehler: String? = null,
-    val id: Long? = null
+    val id: Long? = null,
+    val freigeschaltet: Boolean = false,
+    val hinweis: String? = null
 )
 

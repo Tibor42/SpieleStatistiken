@@ -32,6 +32,7 @@ import com.example.spiele_statistiken.ui.theme.SpieleStatistikenTheme
 import com.example.spiele_statistiken.viewmodel.SpielerStatistikViewModel
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.material.icons.filled.Casino
+import com.example.spiele_statistiken.ui.AboutScreen
 import com.example.spiele_statistiken.ui.EinstellungenScreen
 
 class MainActivity : ComponentActivity() {
@@ -80,7 +81,10 @@ fun MainScreen() {
                 )
             }
             composable("einstellungen") {
-                EinstellungenScreen(viewModel = viewModel, innerPadding = innerPadding)
+                EinstellungenScreen(viewModel = viewModel, innerPadding = innerPadding, onAboutClick = { navController.navigate("about")})
+            }
+            composable("about") {
+                AboutScreen(innerPadding = innerPadding)
             }
         }
     }

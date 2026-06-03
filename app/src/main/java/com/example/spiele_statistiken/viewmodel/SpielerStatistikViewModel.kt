@@ -10,6 +10,7 @@ import com.example.spiele_statistiken.data.SpielEvent
 import com.example.spiele_statistiken.data.SpielEventTeilnehmer
 import com.example.spiele_statistiken.data.SpielTyp
 import com.example.spiele_statistiken.data.TeilnehmerMitTyp
+import com.example.spiele_statistiken.network.GruppenErgebnis
 import com.example.spiele_statistiken.network.RemoteRepository
 import com.example.spiele_statistiken.network.TeilnehmerRequest
 import kotlinx.coroutines.flow.Flow
@@ -133,25 +134,35 @@ class SpielerStatistikViewModel(application: Application) : AndroidViewModel(app
         }
     }
 
-    fun gruppeErstellen(name: String, kennwort: String, callback: (Boolean, String, Long?) -> Unit) {
+    fun gruppeErstellen(name: String, kennwort: String, callback: (GruppenErgebnis) -> Unit) {
         viewModelScope.launch {
             try {
                 val response = remoteRepository.gruppeErstellen(name, kennwort)
                 _syncModus.value = "online"
-                callback(true, "Gruppe '${response.name}' erfolgreich erstellt!", response.id)
+                callback(GruppenErgebnis(
+                    true,
+                    response.nachricht ?: "Gruppe '${response.name}' erfolgreich erstellt!",
+                    response.id,
+                    freigeschaltet = response.freigeschaltet
+                ))
             } catch (e: Exception) {
-                callback(false, "Fehler: ${e.message}", null)
+                callback(GruppenErgebnis(false, "Fehler: ${e.message}"))
             }
         }
     }
-    fun gruppeBeitreten(name: String, kennwort: String, callback: (Boolean, String, Long?) -> Unit) {
+    fun gruppeBeitreten(name: String, kennwort: String, callback: (GruppenErgebnis) -> Unit) {
         viewModelScope.launch {
             try {
                 val response = remoteRepository.gruppeBeitreten(name, kennwort)
                 _syncModus.value = "online"
-                callback(true, "Erfolgreich der Gruppe '${response.name}' beigetreten!", response.id)
+                callback(GruppenErgebnis(
+                    true,
+                    response.nachricht ?:"Erfolgreich der Gruppe '${response.name}' beigetreten!",
+                    response.id,
+                    freigeschaltet = response.freigeschaltet
+                ))
             } catch (e: Exception) {
-                callback(false, "Fehler: ${e.message}", null)
+                callback(GruppenErgebnis(false, "Fehler: ${e.message}"))
             }
         }
     }

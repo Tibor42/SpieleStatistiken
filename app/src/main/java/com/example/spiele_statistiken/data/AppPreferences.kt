@@ -21,9 +21,9 @@ class AppPreferences(context: Context) {
     val istOnline: Boolean
         get() = syncModus == "online"
 
-    var freigeschaltet: Boolean
-        get() = prefs.getBoolean("freigeschaltet", false)
-        set(value) = prefs.edit().putBoolean("freigeschaltet", value).apply()
+    var istFreigeschaltet: Boolean
+        get() = prefs.getBoolean("ist_freigeschaltet", false)
+        set(value) = prefs.edit().putBoolean("ist_freigeschaltet", value).apply()
 
     fun abmelden() {
         prefs.edit().clear().apply()

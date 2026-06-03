@@ -1,6 +1,7 @@
 package com.example.spiele_statistiken.ui
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.selection.toggleable
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -13,7 +14,8 @@ import com.example.spiele_statistiken.viewmodel.SpielerStatistikViewModel
 @Composable
 fun EinstellungenScreen(
     viewModel: SpielerStatistikViewModel,
-    innerPadding: PaddingValues
+    innerPadding: PaddingValues,
+    onAboutClick: () -> Unit
 ) {
     val context = LocalContext.current
     val prefs = remember { AppPreferences(context) }
@@ -100,16 +102,15 @@ fun EinstellungenScreen(
                     onClick = {
                         if (gruppenName.isNotBlank() && kennwort.isNotBlank()) {
                             isLoading = true
-                            viewModel.gruppeErstellen(gruppenName.trim(), kennwort.trim()) { erfolg, nachricht, gruppenId ->
+                            viewModel.gruppeErstellen(gruppenName.trim(), kennwort.trim()) { ergebnis ->
                                 isLoading = false
-                                meldung = nachricht
-                                istFehler = !erfolg
-                                if (erfolg) {
+                                meldung = ergebnis.nachricht
+                                istFehler = !ergebnis.erfolg
+                                if (ergebnis.erfolg && ergebnis.gruppenId!=null) {
                                     prefs.syncModus = "online"
                                     prefs.gruppenName = gruppenName.trim()
-                                    if (gruppenId != null) {
-                                        prefs.gruppenId = gruppenId
-                                    }
+                                    prefs.istFreigeschaltet = ergebnis.freigeschaltet
+                                    prefs.gruppenId = ergebnis.gruppenId
                                 }
                             }
                         }
@@ -122,16 +123,15 @@ fun EinstellungenScreen(
                     onClick = {
                         if (gruppenName.isNotBlank() && kennwort.isNotBlank()) {
                             isLoading = true
-                            viewModel.gruppeBeitreten(gruppenName.trim(), kennwort.trim()) { erfolg, nachricht, gruppenId ->
+                            viewModel.gruppeBeitreten(gruppenName.trim(), kennwort.trim()) { ergebnis ->
                                 isLoading = false
-                                meldung = nachricht
-                                istFehler = !erfolg
-                                if (erfolg) {
+                                meldung = ergebnis.nachricht
+                                istFehler = !ergebnis.erfolg
+                                if (ergebnis.erfolg && ergebnis.gruppenId!=null) {
                                     prefs.syncModus = "online"
                                     prefs.gruppenName = gruppenName.trim()
-                                    if (gruppenId != null) {
-                                        prefs.gruppenId = gruppenId
-                                    }
+                                    prefs.istFreigeschaltet = ergebnis.freigeschaltet
+                                    prefs.gruppenId = ergebnis.gruppenId
                                 }
                             }
                         }
@@ -142,5 +142,17 @@ fun EinstellungenScreen(
                 }
             }
         }
+
+        Spacer(modifier = Modifier.weight(1f))
+
+        HorizontalDivider()
+
+        TextButton(
+            onClick = onAboutClick,
+            modifier = Modifier.align(Alignment.CenterHorizontally)
+        ) {
+            Text("Ueber diese App")
+        }
+
     }
 }
