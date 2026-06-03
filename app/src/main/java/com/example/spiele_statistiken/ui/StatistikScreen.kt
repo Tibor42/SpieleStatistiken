@@ -33,11 +33,12 @@ fun StatistikScreen(
     viewModel: SpielerStatistikViewModel,
     innerPadding: PaddingValues
 ) {
-    val alleSpieler by viewModel.alleSpieler.collectAsStateWithLifecycle(emptyList())
-    val alleEvents by viewModel.alleEvents.collectAsStateWithLifecycle(emptyList())
+    val alleSpieler by viewModel.spielerListe.collectAsStateWithLifecycle()
+    val alleSpielTypen by viewModel.spielTypListe.collectAsStateWithLifecycle()
 
+    val alleEvents by viewModel.alleEvents.collectAsStateWithLifecycle(emptyList())
     val alleTeilnehmerMitTyp by viewModel.alleTeilnehmerMitTyp.collectAsStateWithLifecycle(initialValue = emptyList<TeilnehmerMitTyp>())
-    val alleSpielTypen by viewModel.alleSpielTypen.collectAsStateWithLifecycle(initialValue = emptyList<SpielTyp>())
+
 
     val statistiken = remember(alleSpieler, alleEvents, alleTeilnehmerMitTyp, alleSpielTypen) {
         berechneStatistiken(alleSpieler, alleTeilnehmerMitTyp, alleSpielTypen)

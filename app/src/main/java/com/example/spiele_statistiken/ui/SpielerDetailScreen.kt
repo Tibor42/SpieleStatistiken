@@ -24,7 +24,9 @@ fun SpielerDetailScreen(
     innerPadding: PaddingValues,
     onBack: () -> Unit
 ) {
-    val alleSpieler by viewModel.alleSpieler.collectAsStateWithLifecycle(emptyList())
+
+    val alleSpieler by viewModel.spielerListe.collectAsStateWithLifecycle()
+
     val alleEvents by viewModel.alleEvents.collectAsStateWithLifecycle(emptyList())
     val alleTeilnehmer by viewModel.alleTeilnehmer.collectAsStateWithLifecycle(emptyList())
 
@@ -33,8 +35,9 @@ fun SpielerDetailScreen(
     val kannGeloeschtWerden = meineTeilnahmen.isEmpty()
 
     var bearbeitenModus by remember { mutableStateOf(false) }
-    var neuerVorname by remember { mutableStateOf(spieler?.vorname ?: "") }
-    var neuerNachname by remember { mutableStateOf(spieler?.nachname ?: "") }
+
+    var neuerVorname by remember(spieler) { mutableStateOf(spieler?.vorname ?: "") }
+    var neuerNachname by remember(spieler) { mutableStateOf(spieler?.nachname ?: "") }
 
     Scaffold(
         topBar = {

@@ -27,8 +27,10 @@ fun NeuesEventScreen(
     innerPadding: PaddingValues,
     onSpielerClick: (Long) -> Unit
 ) {
-    val alleSpieler by viewModel.alleSpieler.collectAsStateWithLifecycle(emptyList())
+    val alleSpieler by viewModel.spielerListe.collectAsStateWithLifecycle()
     val ausgewaehlt by viewModel.ausgewaehlteSpieler.collectAsStateWithLifecycle()
+    val alleSpielTypen by viewModel.spielTypListe.collectAsStateWithLifecycle()
+    val ausgewaehlterSpielTyp by viewModel.ausgewaehlterSpielTyp.collectAsStateWithLifecycle()
 
     var datum by remember { mutableStateOf(LocalDate.now().format(DateTimeFormatter.ofPattern("dd.MM.yyyy"))) }
     var startzeit by remember { mutableStateOf("") }
@@ -38,8 +40,7 @@ fun NeuesEventScreen(
     var fehler by remember { mutableStateOf("") }
     var erfolg by remember { mutableStateOf(false) }
 
-    val alleSpielTypen by viewModel.alleSpielTypen.collectAsStateWithLifecycle(initialValue = emptyList<SpielTyp>())
-    val ausgewaehlterSpielTyp by viewModel.ausgewaehlterSpielTyp.collectAsStateWithLifecycle()
+
 
     Column(
         modifier = Modifier
@@ -225,10 +226,11 @@ fun NeuesEventScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text("${spieler.vorname} ${spieler.nachname}".trim())
-                IconButton(onClick = { viewModel.spielerLoeschen(spieler) }) {
-                    Icon(Icons.Filled.ArrowForward, contentDescription = "Details",
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant)
-                }
+                Icon(
+                    Icons.Filled.ArrowForward,
+                    contentDescription = "Details",
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                )
             }
         }
     }

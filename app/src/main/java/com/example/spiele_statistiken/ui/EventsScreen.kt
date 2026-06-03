@@ -23,8 +23,9 @@ fun EventsScreen(
     innerPadding: PaddingValues
 ) {
     val alleEvents by viewModel.alleEvents.collectAsStateWithLifecycle(emptyList())
-    val alleSpieler by viewModel.alleSpieler.collectAsStateWithLifecycle(emptyList())
-    val alleSpielTypen by viewModel.alleSpielTypen.collectAsStateWithLifecycle(emptyList())
+
+    val alleSpieler by viewModel.spielerListe.collectAsStateWithLifecycle()
+    val alleSpielTypen by viewModel.spielTypListe.collectAsStateWithLifecycle()
 
     if (alleEvents.isEmpty()) {
         Box(

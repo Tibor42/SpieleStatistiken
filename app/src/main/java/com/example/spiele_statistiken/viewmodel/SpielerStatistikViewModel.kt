@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.spiele_statistiken.data.AppDatabase
+import com.example.spiele_statistiken.data.AppPreferences
 import com.example.spiele_statistiken.data.Repository
 import com.example.spiele_statistiken.data.Spieler
 import com.example.spiele_statistiken.data.SpielEvent
@@ -16,6 +17,7 @@ import com.example.spiele_statistiken.network.TeilnehmerRequest
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 
@@ -41,9 +43,25 @@ class SpielerStatistikViewModel(application: Application) : AndroidViewModel(app
     val ausgewaehlteSpieler: StateFlow<Set<Long>> = _ausgewaehlteSpieler
 
     private val remoteRepository = RemoteRepository()
+    private val prefs = AppPreferences(application)
+
+    private val _istFreigeschaltet = MutableStateFlow(prefs.istFreigeschaltet)
+    val istFreigeschaltet: StateFlow<Boolean> = _istFreigeschaltet
+
+    val istOnlineUndFreigeschaltet: Boolean
+        get() = prefs.istOnline && prefs.istFreigeschaltet
 
     private val _syncModus = MutableStateFlow("lokal")
     val syncModus: StateFlow<String> = _syncModus
+
+    private val _spielerListe = MutableStateFlow<List<Spieler>>(emptyList())
+    val spielerListe: StateFlow<List<Spieler>> = _spielerListe
+
+    private val _spielTypListe = MutableStateFlow<List<SpielTyp>>(emptyList())
+    val spielTypListe: StateFlow<List<SpielTyp>> = _spielTypListe
+
+    private val _eventListe = MutableStateFlow<List<SpielEvent>>(emptyList())
+    val eventListe: StateFlow<List<SpielEvent>> = _eventListe
 
     fun spielerToggle(spielerId: Long) {
         val aktuell = _ausgewaehlteSpieler.value.toMutableSet()
@@ -59,6 +77,7 @@ class SpielerStatistikViewModel(application: Application) : AndroidViewModel(app
                 _ausgewaehlterSpielTyp.value = repository.getSpielTypById(letzterTypId)
             }
         }
+        datenLaden()
     }
 
     fun setSyncModus(modus: String) {
@@ -163,6 +182,30 @@ class SpielerStatistikViewModel(application: Application) : AndroidViewModel(app
                 ))
             } catch (e: Exception) {
                 callback(GruppenErgebnis(false, "Fehler: ${e.message}"))
+            }
+        }
+    }
+
+    fun datenLaden() {
+        viewModelScope.launch {
+            if (istOnlineUndFreigeschaltet) {
+                try {
+                    val gruppenId = prefs.gruppenId
+                    val spieler = remoteRepository.spielerAbrufen(gruppenId)
+                    _spielerListe.value = spieler.map {
+                        Spieler(id = it.id, vorname = it.vorname, nachname = it.nachname)
+                    }
+                    val typen = remoteRepository.spielTypenAbrufen(gruppenId)
+                    _spielTypListe.value = typen.map {
+                        SpielTyp(id = it.id, name = it.name, gewinnmodus = it.gewinnmodus, rundenRelevant = it.rundenRelevant == 1)
+                    }
+                } catch (e: Exception) {
+                    _spielerListe.value = alleSpieler.first()
+                    _spielTypListe.value = alleSpielTypen.first()
+                }
+            } else {
+                launch { alleSpieler.collect { _spielerListe.value = it } }
+                launch { alleSpielTypen.collect { _spielTypListe.value = it } }
             }
         }
     }
