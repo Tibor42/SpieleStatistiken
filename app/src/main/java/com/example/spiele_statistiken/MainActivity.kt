@@ -97,8 +97,8 @@ fun BottomNavBar(navController: NavHostController) {
 
     NavigationBar {
         NavigationBarItem(
-            icon = { Icon(Icons.Filled.Add, contentDescription = "Neues Event") },
-            label = { Text("Neues Event") },
+            icon = { Icon(Icons.Filled.Add, contentDescription = "Neuen Spielstand erfassen") },
+            label = { Text("N. Event") },
             selected = aktuelleRoute == "neues_event",
             onClick = { navController.navigate("neues_event") }
         )
@@ -116,7 +116,7 @@ fun BottomNavBar(navController: NavHostController) {
         )
         NavigationBarItem(
             icon = { Icon(Icons.Filled.Casino, contentDescription = "Spiel-Typen") },
-            label = { Text("Spiele") },
+            label = { Text("S. Typen") },
             selected = aktuelleRoute == "spiel_typen",
             onClick = { navController.navigate("spiel_typen") }
         )
