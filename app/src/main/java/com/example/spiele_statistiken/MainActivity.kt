@@ -47,6 +47,9 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+/*
+  Test um zu sehen was ich bei git commit eingeben muss...
+ */
 @Composable
 fun MainScreen() {
     val navController = rememberNavController()
