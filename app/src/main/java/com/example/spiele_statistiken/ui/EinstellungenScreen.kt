@@ -278,7 +278,7 @@ private fun PasswortResetDialog(
                 if (schritt == 1) {
                     Text(
                         "Gruppennamen eingeben. Ist eine Kontakt-E-Mail hinterlegt, " +
-                                "wird ein 6-stelliger Code dorthin gesendet.",
+                                "wird ein Reset-Code an diese gesendet.",
                         style = MaterialTheme.typography.bodySmall
                     )
                     OutlinedTextField(
@@ -291,13 +291,13 @@ private fun PasswortResetDialog(
                 } else {
                     Text(
                         "Code aus der E-Mail eingeben und neues Kennwort setzen. " +
-                                "Der Code ist 15 Minuten gueltig.",
+                                "Der Code ist 15 Minuten gültig.",
                         style = MaterialTheme.typography.bodySmall
                     )
                     OutlinedTextField(
                         value = code,
                         onValueChange = { code = it },
-                        label = { Text("Code (6-stellig)") },
+                        label = { Text("Reset-Code") },
                         singleLine = true,
                         modifier = Modifier.fillMaxWidth()
                     )
@@ -357,7 +357,7 @@ private fun PasswortResetDialog(
                             }
                         }
                     }
-                ) { Text("Kennwort aendern") }
+                ) { Text("Kennwort ändern") }
             }
         },
         dismissButton = {

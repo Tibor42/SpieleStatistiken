@@ -206,7 +206,7 @@ class SpielerStatistikViewModel(application: Application) : AndroidViewModel(app
                 val response = remoteRepository.kennwortResetDurchfuehren(name.trim(), code.trim(), neuesKennwort)
                 callback(AktionsErgebnis(
                     response.fehler == null,
-                    response.fehler ?: response.nachricht ?: "Kennwort geaendert."
+                    response.fehler ?: response.nachricht ?: "Kennwort geändert."
                 ))
             } catch (e: Exception) {
                 callback(AktionsErgebnis(false, "Fehler: ${e.message}"))

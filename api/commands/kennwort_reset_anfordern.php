@@ -29,6 +29,7 @@ if (!$gruppe || !$gruppe['email']) {
 
 $id = $gruppe['id'];
 $email = $gruppe['email'];
+$name = $gruppe['name'];
 
 $stmt = $db->prepare("SELECT * FROM spstat_passwort_resets WHERE gruppe_id=?");
 $stmt->execute([$id]);
@@ -51,10 +52,7 @@ if (!$tries) {
 }
  
 if ($blnSendMail) {
-    $mailText = "Hallo,\n\nes wurde ein Kennwort-Reset für die Gruppe '$name' angefordert. Hier ist dein Reset-Code:\n\n$code\n\nDieser Code ist 15 Minuten gültig.\n\nWenn du diesen Reset nicht angefordert hast, kannst du diese Nachricht ignorieren.";
-    
-
-    mail($email, "Kennwort-Reset für Gruppe '$name'", $mailText);
+    sende_reset_mail($email, $name, $code);
 }
 json_response(200, [
     'nachricht' => $resultMsg

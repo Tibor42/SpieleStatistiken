@@ -16,6 +16,8 @@ require_once __DIR__ . '/PHPMailer/PHPMailer.php';
 require_once __DIR__ . '/PHPMailer/SMTP.php';
 require_once __DIR__ . '/PHPMailer/Exception.php';
 
+require_once __DIR__ . '/config.php'; // Für EMAIL_PASSWORD
+//  require_once 'config.php';
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
@@ -32,15 +34,15 @@ function sende_reset_mail(string $an_email, string $gruppen_name, string $code):
     $mail = new PHPMailer(true);
     try {
         $mail->isSMTP();
-        $mail->Host       = 'smtp.thurnay.de';     // -> SMTP-Host deines Hosters
+        $mail->Host       = 'sslout.df.eu';     // -> SMTP-Host deines Hosters
         $mail->SMTPAuth   = true;
-        $mail->Username   = 'noreply@thurnay.de';  // -> Postfach
-        $mail->Password   = 'SMTP_PASSWORT';       // -> aus Config laden, nicht hart codieren
+        $mail->Username   = 'tibor@thurnay.de';  // -> Postfach
+        $mail->Password   = EMAIL_PASSWORD;       // -> aus Config laden, nicht hart codieren
         $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS; // 465; alternativ STARTTLS auf 587
         $mail->Port       = 465;
         $mail->CharSet    = 'UTF-8';
 
-        $mail->setFrom('noreply@thurnay.de', 'Spiele-Statistiken');
+        $mail->setFrom('tibor@thurnay.de', 'Spiele-Statistiken');
         $mail->addAddress($an_email);
 
         $mail->Subject = 'Passwort zuruecksetzen';
