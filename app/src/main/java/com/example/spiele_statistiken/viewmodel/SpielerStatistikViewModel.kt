@@ -20,7 +20,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
-
+import com.example.spiele_statistiken.network.AktionsErgebnis
 
 class SpielerStatistikViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -182,6 +182,48 @@ class SpielerStatistikViewModel(application: Application) : AndroidViewModel(app
                 ))
             } catch (e: Exception) {
                 callback(GruppenErgebnis(false, "Fehler: ${e.message}"))
+            }
+        }
+    }
+
+    fun kennwortResetAnfordern(name: String, callback: (AktionsErgebnis) -> Unit) {
+        viewModelScope.launch {
+            try {
+                val response = remoteRepository.kennwortResetAnfordern(name.trim())
+                callback(AktionsErgebnis(
+                    response.fehler == null,
+                    response.fehler ?: response.hinweis ?: response.nachricht ?: ""
+                ))
+            } catch (e: Exception) {
+                callback(AktionsErgebnis(false, "Fehler: ${e.message}"))
+            }
+        }
+    }
+
+    fun kennwortResetDurchfuehren(name: String, code: String, neuesKennwort: String, callback: (AktionsErgebnis) -> Unit) {
+        viewModelScope.launch {
+            try {
+                val response = remoteRepository.kennwortResetDurchfuehren(name.trim(), code.trim(), neuesKennwort)
+                callback(AktionsErgebnis(
+                    response.fehler == null,
+                    response.fehler ?: response.nachricht ?: "Kennwort geaendert."
+                ))
+            } catch (e: Exception) {
+                callback(AktionsErgebnis(false, "Fehler: ${e.message}"))
+            }
+        }
+    }
+
+    fun gruppenEmailSetzen(name: String, kennwort: String, email: String, callback: (AktionsErgebnis) -> Unit) {
+        viewModelScope.launch {
+            try {
+                val response = remoteRepository.gruppenEmailSetzen(name.trim(), kennwort, email.trim())
+                callback(AktionsErgebnis(
+                    response.fehler == null,
+                    response.fehler ?: response.nachricht ?: "Gespeichert."
+                ))
+            } catch (e: Exception) {
+                callback(AktionsErgebnis(false, "Fehler: ${e.message}"))
             }
         }
     }

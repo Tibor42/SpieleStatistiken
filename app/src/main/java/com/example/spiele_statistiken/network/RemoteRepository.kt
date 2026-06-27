@@ -17,6 +17,23 @@ class RemoteRepository {
         )
     }
 
+    suspend fun kennwortResetAnfordern(name: String): NachrichtResponse {
+        return api.request(
+            ApiRequest(cmd = "kennwort_reset_anfordern", name = name)
+        )
+    }
+
+    suspend fun kennwortResetDurchfuehren(name: String, code: String, neuesKennwort: String): NachrichtResponse {
+        return api.request(
+            ApiRequest(cmd = "kennwort_reset_durchfuehren", name = name, code = code, kennwort = neuesKennwort)
+        )
+    }
+
+    suspend fun gruppenEmailSetzen(name: String, kennwort: String, email: String): NachrichtResponse {
+        return api.request(
+            ApiRequest(cmd = "gruppen_email_setzen", name = name, kennwort = kennwort, email = email)
+        )
+    }
     // Spieler
     suspend fun spielerAbrufen(gruppenId: Long): List<SpielerResponse> {
         return api.spielerListeRequest(

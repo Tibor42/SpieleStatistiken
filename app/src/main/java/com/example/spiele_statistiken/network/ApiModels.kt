@@ -18,7 +18,9 @@ data class ApiRequest(
     val startzeit: String? = null,
     val endzeit: String? = null,
     @SerializedName("anzahl_spiele") val anzahlSpiele: Int? = null,
-    val teilnehmer: List<TeilnehmerRequest>? = null
+    val teilnehmer: List<TeilnehmerRequest>? = null,
+    val code: String? = null,
+    val email: String? = null
 )
 
 data class TeilnehmerRequest(
@@ -75,6 +77,7 @@ data class TeilnehmerResponse(
     val punkte: Int
 )
 
+// Response = die Antwort vom Server
 data class NachrichtResponse(
     val nachricht: String? = null,
     val fehler: String? = null,
@@ -83,3 +86,8 @@ data class NachrichtResponse(
     val hinweis: String? = null
 )
 
+// Aufbereitete Response für das UI
+data class AktionsErgebnis(
+    val erfolg: Boolean,
+    val nachricht: String
+)
