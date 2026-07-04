@@ -14,6 +14,10 @@ class AppPreferences(context: Context) {
         get() = prefs.getString("gruppen_name", "") ?: ""
         set(value) = prefs.edit().putString("gruppen_name", value).apply()
 
+    var email: String
+        get() = prefs.getString("email", "") ?: ""
+        set(value) = prefs.edit().putString("email", value).apply()
+
     var syncModus: String
         get() = prefs.getString("sync_modus", "lokal") ?: "lokal"
         set(value) = prefs.edit().putString("sync_modus", value).apply()

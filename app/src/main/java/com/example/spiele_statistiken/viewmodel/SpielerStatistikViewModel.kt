@@ -158,6 +158,7 @@ class SpielerStatistikViewModel(application: Application) : AndroidViewModel(app
             try {
                 val response = remoteRepository.gruppeErstellen(name, kennwort)
                 _syncModus.value = "online"
+                prefs.email = response.email ?: ""
                 callback(GruppenErgebnis(
                     true,
                     response.nachricht ?: "Gruppe '${response.name}' erfolgreich erstellt!",
@@ -174,6 +175,7 @@ class SpielerStatistikViewModel(application: Application) : AndroidViewModel(app
             try {
                 val response = remoteRepository.gruppeBeitreten(name, kennwort)
                 _syncModus.value = "online"
+                prefs.email = response.email ?: ""
                 callback(GruppenErgebnis(
                     true,
                     response.nachricht ?:"Erfolgreich der Gruppe '${response.name}' beigetreten!",

@@ -36,6 +36,9 @@ fun EinstellungenScreen(
 
     // Online-Status als eigener State -> sofortiges Ein-/Ausblenden.
     var istOnline by remember { mutableStateOf(prefs.istOnline) }
+    var gruppenEmail by remember { mutableStateOf(prefs.email) }
+    var showEmailForm by remember { mutableStateOf(gruppenEmail.isEmpty()) }
+
     val aktuelleGruppe = prefs.gruppenName
 
     if (zeigeResetDialog) {
@@ -92,148 +95,90 @@ fun EinstellungenScreen(
         if (istOnline) {
             HorizontalDivider()
 
-            Text("Kontakt-E-Mail für Passwort-Reset", style = MaterialTheme.typography.titleMedium)
             Text(
-                "Damit das Gruppen-Kennwort später per E-Mail zurückgesetzt werden " +
-                        "kann, hier eine E-Mail hinterlegen. Zur Bestätigung das aktuelle " +
-                        "Kennwort eingeben.",
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-
-            OutlinedTextField(
-                value = emailEingabe,
-                onValueChange = { emailEingabe = it },
-                label = { Text("E-Mail") },
-                singleLine = true,
-                modifier = Modifier.fillMaxWidth()
-            )
-            OutlinedTextField(
-                value = emailKennwort,
-                onValueChange = { emailKennwort = it },
-                label = { Text("Aktuelles Kennwort") },
-                singleLine = true,
-                modifier = Modifier.fillMaxWidth()
-            )
-
-            if (emailMeldung.isNotEmpty()) {
-                Text(
-                    text = emailMeldung,
-                    color = if (emailIstFehler) MaterialTheme.colorScheme.error
-                    else MaterialTheme.colorScheme.primary
-                )
-            }
-
-            if (emailLoading) {
-                CircularProgressIndicator()
-            } else {
-                Button(
-                    onClick = {
-                        if (emailEingabe.isNotBlank() && emailKennwort.isNotBlank()) {
-                            emailLoading = true
-                            emailMeldung = ""
-                            viewModel.gruppenEmailSetzen(
-                                aktuelleGruppe, emailKennwort, emailEingabe.trim()
-                            ) { ergebnis ->
-                                emailLoading = false
-                                emailMeldung = ergebnis.nachricht
-                                emailIstFehler = !ergebnis.erfolg
-                                if (ergebnis.erfolg) {
-                                    emailKennwort = ""   // Kennwort nicht im UI haengen lassen
-                                }
-                            }
-                        }
-                    }
-                ) {
-                    Text("E-Mail speichern")
-                }
-            }
-        }
-
-        // ---------- Bereich B: Gruppe erstellen/beitreten (NUR lokal) ----------
-        if (!istOnline) {
-            HorizontalDivider()
-
-            Text(
-                "Gruppe erstellen oder beitreten:",
+                "Kontakt-E-Mail für Passwort-Reset",
                 style = MaterialTheme.typography.titleMedium
             )
 
-            OutlinedTextField(
-                value = gruppenName,
-                onValueChange = { gruppenName = it },
-                label = { Text("Gruppenname") },
-                modifier = Modifier.fillMaxWidth()
-            )
+            // Umschalt-Button: Text und Farbe richten sich nach dem Zustand.
+            Button(
+                onClick = { showEmailForm = !showEmailForm },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.secondary
+                )
+            ) {
+                Text(if (showEmailForm) "E-Mail Formular schließen" else "Kontakt-E-Mail ändern")
+            }
 
-            OutlinedTextField(
-                value = kennwort,
-                onValueChange = { kennwort = it },
-                label = { Text("Kennwort") },
-                modifier = Modifier.fillMaxWidth()
-            )
-
-            if (meldung.isNotEmpty()) {
+            // Kurzinfo, welche E-Mail aktuell hinterlegt ist (nur wenn zugeklappt).
+            if (!showEmailForm) {
                 Text(
-                    text = meldung,
-                    color = if (istFehler) MaterialTheme.colorScheme.error
-                    else MaterialTheme.colorScheme.primary
+                    if (gruppenEmail.isNotEmpty()) "Hinterlegt: $gruppenEmail"
+                    else "Noch keine E-Mail hinterlegt.",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
 
-            if (isLoading) {
-                CircularProgressIndicator()
-            } else {
-                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Button(
-                        onClick = {
-                            if (gruppenName.isNotBlank() && kennwort.isNotBlank()) {
-                                isLoading = true
-                                viewModel.gruppeErstellen(gruppenName.trim(), kennwort.trim()) { ergebnis ->
-                                    isLoading = false
-                                    meldung = ergebnis.nachricht
-                                    istFehler = !ergebnis.erfolg
-                                    if (ergebnis.erfolg && ergebnis.gruppenId != null) {
-                                        prefs.syncModus = "online"
-                                        prefs.gruppenName = gruppenName.trim()
-                                        prefs.istFreigeschaltet = ergebnis.freigeschaltet
-                                        prefs.gruppenId = ergebnis.gruppenId
-                                        istOnline = true
-                                    }
-                                }
-                            }
-                        },
-                        modifier = Modifier.weight(1f)
-                    ) {
-                        Text("Erstellen")
-                    }
-                    Button(
-                        onClick = {
-                            if (gruppenName.isNotBlank() && kennwort.isNotBlank()) {
-                                isLoading = true
-                                viewModel.gruppeBeitreten(gruppenName.trim(), kennwort.trim()) { ergebnis ->
-                                    isLoading = false
-                                    meldung = ergebnis.nachricht
-                                    istFehler = !ergebnis.erfolg
-                                    if (ergebnis.erfolg && ergebnis.gruppenId != null) {
-                                        prefs.syncModus = "online"
-                                        prefs.gruppenName = gruppenName.trim()
-                                        prefs.istFreigeschaltet = ergebnis.freigeschaltet
-                                        prefs.gruppenId = ergebnis.gruppenId
-                                        istOnline = true
-                                    }
-                                }
-                            }
-                        },
-                        modifier = Modifier.weight(1f)
-                    ) {
-                        Text("Beitreten")
-                    }
+            if (showEmailForm) {
+                Text(
+                    "Damit das Gruppen-Kennwort später per E-Mail zurückgesetzt werden " +
+                            "kann, hier eine E-Mail hinterlegen. Zur Bestätigung das aktuelle " +
+                            "Kennwort eingeben.",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+
+                OutlinedTextField(
+                    value = emailEingabe,
+                    onValueChange = { emailEingabe = it },
+                    label = { Text("E-Mail") },
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth()
+                )
+                OutlinedTextField(
+                    value = emailKennwort,
+                    onValueChange = { emailKennwort = it },
+                    label = { Text("Aktuelles Kennwort") },
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                if (emailMeldung.isNotEmpty()) {
+                    Text(
+                        text = emailMeldung,
+                        color = if (emailIstFehler) MaterialTheme.colorScheme.error
+                        else MaterialTheme.colorScheme.primary
+                    )
                 }
 
-                // Reset-Einstieg: nur relevant, wenn man beitreten will.
-                TextButton(onClick = { zeigeResetDialog = true }) {
-                    Text("Kennwort vergessen?")
+                if (emailLoading) {
+                    CircularProgressIndicator()
+                } else {
+                    Button(
+                        onClick = {
+                            if (emailEingabe.isNotBlank() && emailKennwort.isNotBlank()) {
+                                emailLoading = true
+                                emailMeldung = ""
+                                viewModel.gruppenEmailSetzen(
+                                    aktuelleGruppe, emailKennwort, emailEingabe.trim()
+                                ) { ergebnis ->
+                                    emailLoading = false
+                                    emailMeldung = ergebnis.nachricht
+                                    emailIstFehler = !ergebnis.erfolg
+                                    if (ergebnis.erfolg) {
+                                        val neueEmail = emailEingabe.trim()
+                                        gruppenEmail = neueEmail   // Anzeige aktualisieren
+                                        prefs.email = neueEmail    // dauerhaft merken
+                                        emailKennwort = ""         // Kennwort nicht im UI lassen
+                                        showEmailForm = false      // Formular zuklappen
+                                    }
+                                }
+                            }
+                        }
+                    ) {
+                        Text("E-Mail speichern")
+                    }
                 }
             }
         }

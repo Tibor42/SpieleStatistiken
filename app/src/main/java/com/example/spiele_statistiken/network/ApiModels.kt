@@ -34,7 +34,8 @@ data class GruppeResponse(
     val name: String,
     val freigeschaltet: Boolean = false,
     val nachricht: String? = null,
-    val hinweis: String? = null
+    val hinweis: String? = null,
+    val email: String? = null
 )
 
 data class GruppenErgebnis(
