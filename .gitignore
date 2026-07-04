@@ -14,3 +14,4 @@
 .cxx
 local.properties
 api/config.php
+.vscode/sftp.json

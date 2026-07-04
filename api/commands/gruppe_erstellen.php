@@ -6,7 +6,7 @@ if (empty($name) || empty($kennwort)) {
     json_response(400, ['fehler' => 'Name und Kennwort sind erforderlich']);
 }
 
-$kennwortHash =   kennwort_hash($kennwort);
+$kennwortHash = kennwort_hash($kennwort);
 
 $stmt = $db->prepare("INSERT INTO spstat_gruppen (name, kennwort_hash) VALUES (?, ?)");
 $stmt->execute([$name, $kennwortHash]);
