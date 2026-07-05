@@ -46,6 +46,14 @@ if (!in_array($cmd, $commands)) {
 }
 
 $db = getDB();
+
+if (random_int(1, 100) <= 5) {
+    $stmt = $db->prepare("DELETE FROM spstat_login_errors WHERE erstellt_am < NOW() - INTERVAL 1 HOUR");
+    $stmt->execute();
+    $stmt = $db->prepare("DELETE FROM spstat_passwort_resets WHERE ablauf < NOW() - INTERVAL 1 HOUR");
+    $stmt->execute();
+}
+
 $cmdFile = 'commands/' . $cmd . '.php';
 
 if (!file_exists($cmdFile)) {
