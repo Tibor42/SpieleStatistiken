@@ -1,3 +1,4 @@
 <resources>
-    <string name="app_name">Spiele-Statistiken</string>
+    <string name="allgemein_titel">Statistics for Games</string>
+    <string name="einstellungen_settings">Options</string>
 </resources>

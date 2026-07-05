@@ -6,9 +6,11 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.spiele_statistiken.data.AppPreferences
 import com.example.spiele_statistiken.viewmodel.SpielerStatistikViewModel
+import com.example.spiele_statistiken.R
 
 @Composable
 fun EinstellungenScreen(
@@ -56,7 +58,7 @@ fun EinstellungenScreen(
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        Text("Einstellungen", style = MaterialTheme.typography.headlineSmall)
+        Text(stringResource( R.string.einstellungen_settings ), style = MaterialTheme.typography.headlineSmall)
 
         // ---------- Bereich A: aktueller Sync-Status (immer sichtbar) ----------
         Card(modifier = Modifier.fillMaxWidth()) {
