@@ -76,6 +76,12 @@ fun EinstellungenScreen(
                             prefs.abmelden()
                             viewModel.setSyncModus("lokal")
                             istOnline = false
+                            // lokalen UI-Zustand zuruecksetzen, damit nach dem
+                            // Abmelden nichts Altes durchblitzt
+                            gruppenEmail = ""
+                            showEmailForm = true
+                            gruppenName = ""
+                            kennwort = ""
                             meldung = "Abgemeldet – lokaler Modus aktiv"
                             istFehler = false
                         },
@@ -179,6 +185,98 @@ fun EinstellungenScreen(
                     ) {
                         Text("E-Mail speichern")
                     }
+                }
+            }
+        }
+
+        // ---------- Bereich B: Gruppe erstellen/beitreten (NUR lokal) ----------
+        if (!istOnline) {
+            HorizontalDivider()
+
+            Text(
+                "Gruppe erstellen oder beitreten:",
+                style = MaterialTheme.typography.titleMedium
+            )
+
+            OutlinedTextField(
+                value = gruppenName,
+                onValueChange = { gruppenName = it },
+                label = { Text("Gruppenname") },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            OutlinedTextField(
+                value = kennwort,
+                onValueChange = { kennwort = it },
+                label = { Text("Kennwort") },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            if (meldung.isNotEmpty()) {
+                Text(
+                    text = meldung,
+                    color = if (istFehler) MaterialTheme.colorScheme.error
+                    else MaterialTheme.colorScheme.primary
+                )
+            }
+
+            if (isLoading) {
+                CircularProgressIndicator()
+            } else {
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Button(
+                        onClick = {
+                            if (gruppenName.isNotBlank() && kennwort.isNotBlank()) {
+                                isLoading = true
+                                viewModel.gruppeErstellen(gruppenName.trim(), kennwort.trim()) { ergebnis ->
+                                    isLoading = false
+                                    meldung = ergebnis.nachricht
+                                    istFehler = !ergebnis.erfolg
+                                    if (ergebnis.erfolg && ergebnis.gruppenId != null) {
+                                        prefs.syncModus = "online"
+                                        prefs.gruppenName = gruppenName.trim()
+                                        prefs.istFreigeschaltet = ergebnis.freigeschaltet
+                                        prefs.gruppenId = ergebnis.gruppenId
+                                        gruppenEmail = prefs.email
+                                        showEmailForm = gruppenEmail.isEmpty()
+                                        istOnline = true
+                                    }
+                                }
+                            }
+                        },
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text("Erstellen")
+                    }
+                    Button(
+                        onClick = {
+                            if (gruppenName.isNotBlank() && kennwort.isNotBlank()) {
+                                isLoading = true
+                                viewModel.gruppeBeitreten(gruppenName.trim(), kennwort.trim()) { ergebnis ->
+                                    isLoading = false
+                                    meldung = ergebnis.nachricht
+                                    istFehler = !ergebnis.erfolg
+                                    if (ergebnis.erfolg && ergebnis.gruppenId != null) {
+                                        prefs.syncModus = "online"
+                                        prefs.gruppenName = gruppenName.trim()
+                                        prefs.istFreigeschaltet = ergebnis.freigeschaltet
+                                        prefs.gruppenId = ergebnis.gruppenId
+                                        gruppenEmail = prefs.email
+                                        showEmailForm = gruppenEmail.isEmpty()
+                                        istOnline = true
+                                    }
+                                }
+                            }
+                        },
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text("Beitreten")
+                    }
+                }
+
+                // Reset-Einstieg: nur relevant, wenn man beitreten will.
+                TextButton(onClick = { zeigeResetDialog = true }) {
+                    Text("Kennwort vergessen?")
                 }
             }
         }
