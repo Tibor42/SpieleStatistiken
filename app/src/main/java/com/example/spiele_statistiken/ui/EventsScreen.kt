@@ -68,7 +68,6 @@ fun EventCard(
     val teilnehmer by viewModel.getTeilnehmerFuerEvent(event.id)
         .collectAsStateWithLifecycle(emptyList())
 
-    val winner = teilnehmer.minByOrNull { it.punkte }
 
     Card(modifier = Modifier.fillMaxWidth()) {
         Column(modifier = Modifier.padding(12.dp)) {
@@ -117,7 +116,22 @@ fun EventCard(
             HorizontalDivider()
             Spacer(modifier = Modifier.height(8.dp))
 
-            teilnehmer.sortedBy { it.punkte }.forEach { t ->
+            val spielTyp: SpielTyp? = alleSpielTypen.find { it.id == event.spielTypId }
+            val meistePunkteGewinnt: Boolean = spielTyp?.gewinnmodus == "meiste"
+
+            val winner: SpielEventTeilnehmer? = if (meistePunkteGewinnt) {
+                teilnehmer.maxByOrNull { it.punkte }
+            } else {
+                teilnehmer.minByOrNull { it.punkte }
+            }
+
+            val sortierteTeilnehmer: List<SpielEventTeilnehmer> = if (meistePunkteGewinnt) {
+                teilnehmer.sortedByDescending { it.punkte }
+            } else {
+                teilnehmer.sortedBy { it.punkte }
+            }
+
+            sortierteTeilnehmer.forEach { t ->
                 val spieler = alleSpieler.find { it.id == t.spielerId }
                 val name = spieler?.let { "${it.vorname} ${it.nachname}".trim() } ?: "Unbekannt"
                 val istGewinner = t.spielerId == winner?.spielerId
